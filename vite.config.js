@@ -6,6 +6,6 @@ export default defineConfig({
   server: { port: 5173, strictPort: true },
   build: { chunkSizeWarningLimit: 1500 },
   test: {
-    include: ['src/geo/**/*.test.js'],
+    include: ['src/**/*.test.js'],
   },
 });
