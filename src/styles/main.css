@@ -209,7 +209,7 @@ html, body {
 .m-head .btn { margin-left: auto; }
 
 /* 结算 */
-.result { width: 560px; align-items: stretch; }
+.result { width: 640px; align-items: stretch; }
 .r-body { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; min-height: 0; flex: 1 1 auto; padding-right: 2px; }
 .r-actions { flex: none; }
 .r-stars { display: flex; justify-content: center; gap: 14px; padding-top: 4px; }
@@ -237,6 +237,7 @@ html, body {
 .r-card p { margin: 2px 0 0; font-size: 18px; line-height: 1.4; }
 .r-card p + p { margin-top: 0; }
 .r-actions { display: flex; gap: 10px; justify-content: center; padding-top: 4px; }
+.r-actions .btn.big { padding: 0 18px; }
 
 /* 设置浮层 */
 .settings-pop { position: absolute; top: 62px; right: 0; display: none; flex-direction: column; gap: 4px; padding: 8px; background: var(--paper); border: 2px solid var(--ridge); border-radius: 18px; }

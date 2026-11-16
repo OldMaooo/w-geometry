@@ -36,7 +36,9 @@ export function createHud(root, deps) {
   // 工具栏 + 先猜条
   const toolbar = h('div.toolbar');
   const guessBar = h('div.guess');
-  bottomMid.append(guessBar, toolbar);
+  // 结算后「看成果」时，底部只留一个「看好了」按钮（点了回到结算面板）
+  const peekBox = h('div.peek');
+  bottomMid.append(guessBar, toolbar, peekBox);
 
   // 视角切换
   const viewBtn = btn('top', '俯视', () => { controls.toggleTop(); audio.play('whoosh'); }, 'view');
@@ -266,7 +268,7 @@ export function createHud(root, deps) {
   }
 
   /**
-   * 结算面板。返回 Promise<'next'|'nextChapter'|'map'|'again'>。
+   * 结算面板。返回 Promise<'next'|'nextChapter'|'map'|'again'>。面板上还有「看成果」：收起面板留在场景里看，不结束这次结算。
    * @param {{ stars: number, discovery?: string, eye?: {kind:string, guess:number|string, actual:number|string, unit?:string, acc:number}[],
    *   better?: boolean, card?: {title:string, lines:string[], icon?:string} | null, solo?: boolean, hasNext?: boolean, nextChapter?: boolean, title?: string }} r
    */
@@ -303,9 +305,19 @@ export function createHud(root, deps) {
     }
     return new Promise((resolve) => {
       const done = (v) => { closeModal(); resolve(v); };
+      // 看成果：先把面板收起来，留在搭好的场景里随便转着看；点「看好了」面板原样回来
+      const peek = () => {
+        modalBox.classList.remove('open');
+        audio.play('whoosh');
+        peekBox.replaceChildren(btn('check', '看好了', () => {
+          peekBox.replaceChildren();
+          modalBox.classList.add('open');
+        }, 'big primary'));
+      };
       const actions = h('div.r-actions', {}, [
         btn('map', '回地图', () => done('map'), 'big'),
         btn('restart', '再玩', () => done('again'), 'big'),
+        btn('eye', '看成果', peek, 'big'),
         r.hasNext ? btn('next', '下一关', () => done('next'), 'big primary') : null,
         !r.hasNext && r.nextChapter ? btn('next', '下一章', () => done('nextChapter'), 'big primary') : null,
       ]);
@@ -322,6 +334,7 @@ export function createHud(root, deps) {
   function closeModal() {
     modalBox.classList.remove('open');
     modalBox.replaceChildren();
+    peekBox.replaceChildren();
   }
 
   function clearLevel() {
