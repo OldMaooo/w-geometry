@@ -1,0 +1,62 @@
+/* 笔记浮标 + 右侧面板。沿用本应用的暖纸色（--paper / --ink / --line），卡片不加阴影。
+   todo-tree 的颜色变量映射到本应用配色，窗口不跟随系统深色。 */
+.notes-fab, .notes-panel {
+  --tt-ink: var(--ink); --tt-ink-2: var(--ink-2); --tt-ink-3: #a08c72;
+  --tt-bg: var(--paper); --tt-bg-2: var(--paper-2); --tt-line: var(--line); --tt-hover: var(--paper-2);
+  --tt-accent: var(--deep); --tt-accent-soft: #e6efdc; --tt-done: var(--deep);
+}
+
+/* 浮标：小、半透明，不抢游戏画面；悬停/拖动时变实 */
+.notes-fab {
+  position: fixed; z-index: 2000; width: 40px; height: 40px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--paper); color: var(--ink-2); opacity: .7;
+  cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none;
+}
+.notes-fab:hover, .notes-fab:focus-visible { opacity: 1; background: var(--paper-2); color: var(--ink); }
+.notes-fab:focus-visible { outline: 2px solid var(--deep); outline-offset: 2px; }
+.notes-fab.dragging { cursor: grabbing; opacity: 1; }
+.notes-fab.hidden { display: none; }
+
+/* 面板：贴右边、无遮罩、无阴影 */
+.notes-panel {
+  position: fixed; z-index: 2000; top: 0; right: 0; bottom: 0; width: var(--notes-w, 360px);
+  display: flex; flex-direction: column;
+  background: var(--paper); color: var(--ink); border-left: 1px solid var(--line);
+  font-size: 15px; line-height: 1.6;
+  transform: translateX(100%); visibility: hidden;
+  transition: transform .18s ease, visibility 0s linear .18s;
+  /* 全局 body 禁止了选中文字，笔记要能点进去改、能选中复制 */
+  -webkit-user-select: text; user-select: text;
+}
+.notes-panel.open { transform: none; visibility: visible; transition: transform .18s ease; }
+.notes-panel.resizing { transition: none; -webkit-user-select: none; user-select: none; }
+.notes-panel * { -webkit-user-select: text; user-select: text; }
+.notes-panel.resizing * { -webkit-user-select: none; user-select: none; }
+
+/* 左边缘拖动把手：8px 宽，悬停显示高亮线 */
+.notes-resizer {
+  position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: ew-resize; touch-action: none; z-index: 1;
+}
+.notes-resizer::after {
+  content: ''; position: absolute; left: 3px; top: 0; bottom: 0; width: 2px; background: transparent;
+}
+.notes-resizer:hover::after, .notes-panel.resizing .notes-resizer::after { background: var(--deep); }
+
+.notes-head { flex: none; display: flex; align-items: center; gap: 2px; padding: 10px 10px 6px 16px; }
+.notes-title { flex: 1; font-size: 16px; }
+.notes-ibtn {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;
+  border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); cursor: pointer;
+}
+.notes-ibtn:hover { background: var(--paper-2); color: var(--ink); }
+.notes-ibtn:focus-visible { outline: 2px solid var(--deep); outline-offset: 1px; }
+.notes-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 12px; }
+
+/* 输入框激活态：只把原来的边框变成主色，外面不再叠一圈（UX-29） */
+.notes-panel .tt-new:focus-visible { outline: none; border-color: var(--deep); }
+
+/* 窄屏放不下：盖在游戏上 */
+@media (max-width: 820px) { .notes-panel { max-width: 100vw; } }
+@media (prefers-reduced-motion: reduce) { .notes-panel, .notes-panel.open { transition: none; } }

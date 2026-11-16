@@ -17,6 +17,7 @@ import { installCancelFilter } from './engine/scope.js';
 import { h } from './engine/dom.js';
 import { icon } from './engine/icons.js';
 import { createWorld } from './world/world.js';
+import { createNotes } from './notes/notes.js';
 
 installCancelFilter();
 const app = document.getElementById('app');
@@ -47,6 +48,7 @@ E.levels = levels;
 const world = createWorld(E, { openLevel: (lv) => levels.start(lv) });
 
 installDebug(E, levels, world);
+createNotes(app); // 大人记 bug 用的笔记浮标 + 侧栏
 
 // 首屏：一个大「开始」按钮，顺便解锁声音和朗读（iPad 必须在点按里解锁）
 const params = new URLSearchParams(location.search);

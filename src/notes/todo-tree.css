@@ -1,0 +1,84 @@
+/* todo-tree 样式（遵守 core/rules/design-global.md 的 UX-3/5/7/9/12/13/14）。
+ * 可覆盖变量（没定义就用括号里的默认）：
+ *   --tt-ink --tt-ink-2 --tt-ink-3 --tt-bg(面板底) --tt-bg-2(输入框/悬停底) --tt-line --tt-accent --tt-accent-soft --tt-done --tt-danger --tt-hover
+ * 深色模式：宿主改这些变量即可；下面带了一份跟随系统的默认。 */
+.tt,.tt-drawer,.tt-panel{
+  --_ink:var(--tt-ink,#171a21); --_ink2:var(--tt-ink-2,#555c6c); --_ink3:var(--tt-ink-3,#8a90a0);
+  --_bg:var(--tt-bg,#ffffff); --_bg2:var(--tt-bg-2,#f4f5f9); --_line:var(--tt-line,#e1e4ec); --_hover:var(--tt-hover,#f1f2f6);
+  --_acc:var(--tt-accent,#3d6fd4); --_accs:var(--tt-accent-soft,#e8effc); --_done:var(--tt-done,#1f8a55); --_danger:var(--tt-danger,#c8453a);
+}
+@media (prefers-color-scheme: dark){
+  .tt,.tt-drawer,.tt-panel{ --_ink:var(--tt-ink,#eceef4); --_ink2:var(--tt-ink-2,#a6adbe); --_ink3:var(--tt-ink-3,#767e91);
+       --_bg:var(--tt-bg,#191c23); --_bg2:var(--tt-bg-2,#232733); --_line:var(--tt-line,#2a2e39); --_hover:var(--tt-hover,#232733);
+       --_acc:var(--tt-accent,#7ea6f2); --_accs:var(--tt-accent-soft,#1c2540); --_done:var(--tt-done,#4fc286); --_danger:var(--tt-danger,#ec7b6f); }
+}
+.tt{display:flex; flex-direction:column; min-height:0; height:100%; color:var(--_ink); font:inherit}
+.tt *{box-sizing:border-box}
+.tt .tt-ic{display:block; flex:none}
+
+/* 顶部：新增 + 全部展开/收起（图标按钮） */
+.tt-bar{display:flex; gap:6px; align-items:center; padding:0 0 8px; flex:none}
+.tt-form{flex:1; margin:0}
+.tt-new{width:100%; font:inherit; padding:8px 11px; border:1px solid var(--_line); border-radius:10px; background:var(--_bg2); color:var(--_ink)}
+.tt-new:focus-visible{outline:2px solid var(--_acc); outline-offset:1px}
+.tt-ibtn{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:0; border-radius:8px; background:transparent; color:var(--_ink2); cursor:pointer; flex:none}
+.tt-ibtn:hover{background:var(--_hover); color:var(--_ink)}
+.tt-ibtn:focus-visible,.tt-btn:focus-visible,.tt-tg:focus-visible,.tt-del:focus-visible{outline:2px solid var(--_acc); outline-offset:1px}
+.tt-btn{font:inherit; font-size:13px; padding:2px 10px; border:1px solid var(--_line); border-radius:8px; background:var(--_bg); color:var(--_ink); cursor:pointer; white-space:nowrap}
+.tt-btn:hover{background:var(--_hover)}
+
+/* 列表：只有这一块滚动；状态栏固定在最底（UX-14） */
+.tt-list{list-style:none; margin:0; padding:0; flex:1 1 auto; min-height:0; overflow-y:auto}
+.tt-item{position:relative; display:flex; align-items:flex-start; gap:6px; padding-top:5px; padding-bottom:5px; padding-right:6px; border-radius:8px}
+.tt-item.tt-top{margin-top:14px}                 /* 大组之间的间距 > 兄弟行间距（UX-12） */
+.tt-item.tt-top.tt-first{margin-top:0}
+.tt-item:hover,.tt-item:focus-within{background:var(--_hover)}   /* 选中/悬停：整行变灰，文字区不染色（UX-13） */
+.tt-item input[type=checkbox]{margin:4px 0 0; width:16px; height:16px; accent-color:var(--_done); cursor:pointer; flex:none}
+.tt-gp{position:absolute; left:2px; top:7px; width:14px; color:var(--_ink3); cursor:grab; user-select:none; opacity:0}
+.tt-item:hover .tt-gp{opacity:1}
+.tt-tg{display:inline-flex; align-items:center; justify-content:center; flex:none; width:20px; height:24px; border:0; background:transparent; color:var(--_ink2); cursor:pointer; border-radius:5px; padding:0}
+.tt-tg:hover{background:var(--_bg2)}
+.tt-tg.tt-sp{cursor:default; pointer-events:none}   /* 没有子项：留等宽空位，文字对齐 */
+.tt-tx{flex:1; min-width:0; outline:none; background:transparent; padding:0; word-break:break-word}
+.tt-top > .tt-tx{font-weight:600}
+.tt-done .tt-tx{text-decoration:line-through; color:var(--_ink3)}
+.tt-cn{flex:none; font-size:12px; color:var(--_ink3); margin-top:2px}
+.tt-del{display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:22px; height:22px; margin-top:1px; border:0; border-radius:6px; background:transparent; color:var(--_ink3); cursor:pointer; opacity:0; padding:0 3px; font:inherit; font-size:12px}
+.tt-item:hover .tt-del,.tt-item:focus-within .tt-del,.tt-del:focus-visible,.tt-armed .tt-del{opacity:1}
+.tt-del:hover{color:var(--_danger); background:var(--_bg2)}
+.tt-armed .tt-del{color:var(--_danger); padding:0 8px; white-space:nowrap}
+@media (hover:none){ .tt-del{opacity:1} }       /* 触屏没有悬停，删除必须能找到 */
+.tt-dragging{opacity:.4}
+.tt-dz-before{background-image:linear-gradient(var(--_acc),var(--_acc)); background-size:100% 2px; background-repeat:no-repeat; background-position:top}
+.tt-dz-after{background-image:linear-gradient(var(--_acc),var(--_acc)); background-size:100% 2px; background-repeat:no-repeat; background-position:bottom}
+.tt-dz-child{background-color:var(--_accs); background-image:linear-gradient(var(--_acc),var(--_acc)); background-size:3px 100%; background-repeat:no-repeat; background-position:left}
+.tt-empty{color:var(--_ink3); font-size:13px; padding:6px 4px}
+.tt-note{color:var(--_ink2); font-size:14px; line-height:1.6; margin:4px 2px}
+
+/* 状态栏：固定在最底，不随列表滚动 */
+.tt-status{flex:none; margin-top:6px; padding:6px 0 4px; border-top:1px solid var(--_line); font-size:12px; line-height:16px; color:var(--_ink3); display:flex; align-items:center; gap:8px}
+.tt-status.tt-error{color:var(--_danger)}
+.tt-status.tt-warn{color:#c0651a}
+
+/* 侧边抽屉：无蒙层、无阴影；背后页面照常可点（UX-14、UX-7） */
+.tt-drawer{position:fixed; top:0; right:0; bottom:0; width:min(420px,100vw); z-index:1000; display:flex; flex-direction:column;
+  background:var(--_bg); color:var(--_ink); border-left:1px solid var(--_line); transform:translateX(100%); visibility:hidden;
+  transition:transform .18s ease, visibility 0s linear .18s; font-size:15px; line-height:1.6}
+.tt-drawer.tt-open{transform:none; visibility:visible; transition:transform .18s ease}
+.tt-dh{flex:none; display:flex; align-items:center; justify-content:space-between; padding:12px 14px 8px 16px}
+.tt-dt{display:inline-flex; align-items:center; gap:8px; font-size:16px}
+.tt-dc{font-size:12px; color:var(--_ink3); min-width:1ch}
+.tt-dbody{flex:1; min-height:0; display:flex; flex-direction:column; padding:0 12px 0}
+@media (prefers-reduced-motion:reduce){ .tt-drawer,.tt-drawer.tt-open{transition:none} }
+
+/* 锚定浮层：贴在吸顶工具条下面，盖在内容上，不加蒙层、无阴影；底边横条拖动改高度 */
+.tt-panel{position:fixed; z-index:900; display:none; flex-direction:column; background:var(--_bg); color:var(--_ink);
+  border:1px solid var(--_line); border-radius:12px; padding:10px 12px 0; font-size:15px; line-height:1.6}
+.tt-panel.tt-open{display:flex}
+.tt-pbody{flex:1 1 auto; min-height:0; display:flex; flex-direction:column}
+.tt-rs{position:relative; flex:none; height:24px; margin:0 -12px; display:flex; align-items:center; justify-content:center; cursor:ns-resize; touch-action:none; border-radius:0 0 12px 12px}
+.tt-rs > span{display:block; width:40px; height:4px; border-radius:2px; background:var(--_line)}
+.tt-rs:hover > span,.tt-resizing .tt-rs > span{background:var(--_acc)}
+.tt-resizing{user-select:none}
+/* 浮层里：状态文字挤进底边那一行，左对齐；中间仍是拖动横条 */
+.tt-rs .tt-status{position:absolute; left:12px; top:0; bottom:0; margin:0; padding:0; border:0; max-width:calc(50% - 40px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
