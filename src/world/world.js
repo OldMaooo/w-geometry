@@ -89,8 +89,9 @@ export function createWorld(E, nav) {
     }
     // 大河：沿曲线铺一条水带 + 沙岸
     const curve = new THREE.CatmullRomCurve3(RIVER.map(([x, z]) => new THREE.Vector3(x, 0, z)));
-    root.add(ribbon(curve, 5.4, mat('#E2CD98'), 0.04));
-    const water = ribbon(curve, 3.8, new THREE.MeshPhongMaterial({ color: PALETTE.river, shininess: 80, specular: 0xa8dcf5 }), 0.08, true);
+    // 沙岸和水面要隔开足够高度：水面会上下起伏，波谷碰到沙面就会闪出一条条沙色（穿模）
+    root.add(ribbon(curve, 5.4, mat('#E2CD98'), 0.05));
+    const water = ribbon(curve, 3.8, new THREE.MeshPhongMaterial({ color: PALETTE.river, shininess: 80, specular: 0xa8dcf5 }), 0.15, true);
     root.add(water);
     animateWater(water);
     // 桥
@@ -408,7 +409,7 @@ function animateWater(mesh) {
   const off = (dt, t) => {
     if (!mesh.parent) return;
     for (let i = 0; i < pos.count; i++) {
-      pos.array[i * 3 + 1] = base[i * 3 + 1] + Math.sin(base[i * 3] * 0.6 + t * 1.8) * 0.04;
+      pos.array[i * 3 + 1] = base[i * 3 + 1] + Math.sin(base[i * 3] * 0.6 + t * 1.8) * 0.03;
     }
     pos.needsUpdate = true;
   };
