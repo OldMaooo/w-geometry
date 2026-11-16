@@ -13,7 +13,7 @@
 npm install
 npm run dev        # 开发服务器（默认 5173）
 npm run build      # 生产构建
-npm test           # vitest：只测 src/geo/ 下的纯几何数学
+npm test           # vitest：src/ 下所有 *.test.js（纯几何数学）
 ```
 
 调试入口：`/?level=ch1-l3` 直接进某一关；`/?debug=1` 打开调试面板；控制台 `window.__geo`。
@@ -37,6 +37,8 @@ npm test           # vitest：只测 src/geo/ 下的纯几何数学
    做章节时不许改 `src/engine/`、`src/geo/`、别的章节；引擎缺能力先在本章目录里补，交付报告里写「建议提升到引擎」。
 5. **存档很小**：和 kiwistudy 其他 5 个应用共用一份浏览器存储额度，本应用存档 key 一律 `geo_` 前缀，总量控制在 20KB 内。
 6. 主力设备是 iPad 横屏和电脑；文石墨水屏跑不动 3D，不作为目标设备。
+7. **单位先给实物**：第一次用到一个单位（步、草垫、斗……）之前，先让他在画面里看到「一个」有多大；
+   新单位登记到本章 `units`，顶栏尺子按钮随时能查（做法见 `doc/engine-contract.md`「单位卡」）。
 
 ## 体验登记
 
