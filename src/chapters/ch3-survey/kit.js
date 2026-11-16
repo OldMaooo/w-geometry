@@ -37,7 +37,7 @@ export function mountDom(ctx, el) {
 }
 
 const STYLE = `
-.c3-dial { position: absolute; left: 14px; bottom: 18px; width: 262px; height: 158px; z-index: 5; pointer-events: auto;
+.c3-dial { position: absolute; left: 14px; bottom: 18px; width: 262px; height: 182px; z-index: 5; pointer-events: auto;
   background: rgba(255, 248, 234, 0.92); border: 2px solid var(--ridge, #8b6b43); border-radius: 22px; touch-action: none;
   transition: opacity .25s; }
 .c3-dial.locked { opacity: .55; pointer-events: none; }
@@ -188,7 +188,7 @@ export function makeSun(ctx, o = {}) {
   }
 
   // ---- 拨盘 ----
-  const W = 262, H = 158, CX = 131, CY = 128, R = 100;
+  const W = 262, H = 182, CX = 131, CY = 128, R = 100;
   const knobPos = (s) => { const th = Math.PI * (1 - s); return { x: CX + R * Math.cos(th), y: CY - R * Math.sin(th) }; };
   let dial = null, knob = null;
   function moveKnob() {
@@ -204,7 +204,8 @@ export function makeSun(ctx, o = {}) {
     dial.setAttribute('aria-label', '太阳');
     dial.innerHTML = `<svg viewBox="0 0 ${W} ${H}"><path d="M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}" fill="none" stroke="#C9A66B" stroke-width="5" stroke-dasharray="2 11" stroke-linecap="round"/>
       <rect x="${CX - R - 18}" y="${CY + 2}" width="${2 * R + 36}" height="12" rx="6" fill="#B7D190"/>
-      <rect x="${CX - R - 18}" y="${CY + 2}" width="${2 * R + 36}" height="5" rx="2.5" fill="#8FB86E"/></svg>`;
+      <rect x="${CX - R - 18}" y="${CY + 2}" width="${2 * R + 36}" height="5" rx="2.5" fill="#8FB86E"/>
+      <g font-size="19" text-anchor="middle" fill="#6B5334"><text x="${CX - R}" y="${CY + 40}">早上</text><text x="${CX}" y="${CY - 14}" opacity="0.8">中午</text><text x="${CX + R}" y="${CY + 40}">傍晚</text></g></svg>`;
     knob = document.createElement('div');
     knob.className = 'c3-sun';
     knob.appendChild(icon('sun', { size: 30, stroke: 2.6 }));

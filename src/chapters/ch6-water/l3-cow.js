@@ -222,7 +222,7 @@ export default defineLevel({
   id: 'ch6-l3',
   title: '牵牛饮水',
   concept: '镜像·最短路',
-  brief: '每天从村子牵牛到河边喝水，再去田里干活。在河边哪一点喝水，走的路最短？',
+  brief: '每天牵牛到河边喝水，再去田里。在河边哪一点喝水，走的路最短？',
   discovery: '拐弯的路，翻过去就成了直路；直路最短。',
 
   async setup(ctx) {

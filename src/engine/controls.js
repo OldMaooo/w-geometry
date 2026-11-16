@@ -83,7 +83,7 @@ export function createControls(stage) {
     /**
      * 让一块区域刚好装进画面（平滑飞过去）。
      * @param {{x:number,z:number}} center @param {number} radius 区域半径（世界单位）
-     * @param {{ yaw?: number, pitch?: number, instant?: boolean, y?: number }} [opt] 角度用度
+     * @param {{ yaw?: number, pitch?: number, instant?: boolean, y?: number, left?: number }} [opt] 角度用度；left：让这块区域落在屏幕偏左（0–1，占半屏宽的比例），给居中的结算面板让位
      */
     frame(center, radius, opt = {}) {
       goal.tx = center.x;
@@ -95,6 +95,12 @@ export function createControls(stage) {
       const hfov = 2 * Math.atan(Math.tan(vfov / 2) * cam.aspect);
       const fov = Math.min(vfov, hfov);
       goal.dist = (radius / Math.sin(fov / 2)) * 1.05;
+      if (opt.left) {
+        // 目标点往镜头右边挪，画面里的东西就偏到左边去
+        const halfW = goal.dist * Math.tan(hfov / 2);
+        goal.tx += Math.cos(goal.yaw) * halfW * opt.left;
+        goal.tz -= Math.sin(goal.yaw) * halfW * opt.left;
+      }
       limits.maxDist = Math.max(goal.dist * 1.8, 30);
       limits.minDist = Math.max(4, goal.dist * 0.35);
       clampGoal();

@@ -32,7 +32,7 @@ export default defineLevel({
   id: 'ch4-l6',
   title: '方块金字塔',
   concept: '平方数·层层相加',
-  brief: '国王要一座 4 层的阶梯金字塔。顶上 1 块，往下每层大一圈。要准备多少块石头？',
+  brief: '国王要 4 层的阶梯金字塔：顶上 1 块，每层大一圈。要几块石头？',
   discovery: '每一层都是一个正方形：1、4、9、16、25……',
 
   async setup(ctx) {
@@ -250,8 +250,9 @@ async function sunrise(ctx) {
     dl.position.set(dir.x * 40, dir.y * 40, dir.z * 40);
     dl.target.position.set(0, 0, 0);
     dl.color.copy(lo.light).lerp(hi.light, k);
-    dl.intensity = 1.9 + 0.7 * k;
-    hemi.intensity = 0.8 + 0.4 * k;
+    dl.intensity = 2.4 + 0.2 * k;
+    // 天光压低些：日出时太阳光和影子的反差大，长影子才看得清
+    hemi.intensity = 0.38 + 0.8 * k;
     bgc.copy(lo.top).lerp(hi.top, k);
     scene.background = bgc;
     tmp.copy(lo.bot).lerp(hi.bot, k);

@@ -16,7 +16,7 @@ export default defineLevel({
   id: 'ch5-l5',
   title: '一张席子围粮囤',
   concept: '同周长·圆最大',
-  brief: '只有一张 12 步长、2 步高的席子，围成一圈当粮囤的壁。围成什么形状装得最多？',
+  brief: '一张 12 步长、2 步高的席子，围成粮囤。什么形状装得最多？',
   discovery: '围墙一样长，圆的肚子最大。圆是比方更「方」的。',
 
   async setup(ctx) {
@@ -146,12 +146,12 @@ export default defineLevel({
     lbl.remove();
     lblFree.remove();
     silo.setFree(false);
-    ctx.view.frame({ x: 0, z: 0 }, 10.4, { y: 0.8 });
+    ctx.view.frame({ x: 1.0, z: 0 }, 8.2, { y: 0.8 });
     const tag1 = ctx.labels.add(v3(-4.6, 2, 0), `12 步长 · 2 步高<br>约 ${Math.round(DOU[2])} 斗`, { cls: 'tag', dy: 0.6 });
     await ctx.fx.to(silo.group.position, { x: -4.6 }, 700);
     const silo2 = makeSilo(ctx, { p: 24, H: 1, x: 3.8, z: 0, shapes: [{ type: 'circle' }], t: 0 });
     ctx.fx.pop(silo2.group, { duration: 420 });
-    sack.group.position.set(11, 0, 0.4);
+    sack.group.position.set(9.4, 0, 0.4);
     sack.home.copy(sack.group.position);
     const tag2 = ctx.labels.add(v3(3.8, 1, 0), '24 步长 · 1 步高', { cls: 'tag', dy: 1.2 });
     ctx.hud.task('把席子横过来：24 步长、1 步高，围成圆。');

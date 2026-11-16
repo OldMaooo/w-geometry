@@ -229,6 +229,8 @@ export default defineLevel({
       busy.v = false;
       if (measured.every(Boolean)) allMeasured();
     }
+    // 等镜头飞稳了再冒出「量一量」，免得飞的途中压在任务条上
+    await ctx.wait(900);
     shapes.forEach((s, i) => {
       const c = i === 0 ? v3(-8.5, 0.5, 6) : i === 1 ? v3(-0.4, 0.5, 6.6) : v3(9, 0.5, 6.5);
       tagBtns.push(ctx.labels.add(c, `量一量 ${s.name}`, { cls: 'tag', onTap: () => go(measure(i)) }));

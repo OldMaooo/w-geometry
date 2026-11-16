@@ -256,6 +256,8 @@ export function makeField(ctx, { x, z, w, d, soil = '#B98E57', ridge = true, see
     },
     /** 淹了：庄稼没了，水退去。 */
     drainFlood() { flood.visible = false; },
+    /** 把已经长出来的庄稼收掉（多轮关卡换轮时用）。 */
+    clearCrops() { if (crops) { ctx.remove(crops.mesh); crops = null; } },
     reset() { api.setLevel(0); },
     dispose() { ctx.remove(vol); ctx.remove(flood); ctx.remove(plot.group); if (crops) ctx.remove(crops.mesh); },
   };

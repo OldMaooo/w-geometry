@@ -173,6 +173,9 @@ export default defineLevel({
     ctx.nudge(bestFound ? '最省的标准斗：4 × 3 × 2，只用 40 块板。' : '这个箱子可以。其实还有更省板的。', { kind: 'good' });
     await ctx.wait(3000);
     lblV.remove();
+    // 结算面板在正中间：镜头偏一点，让箱子露在面板左边
+    ctx.view.frame({ x: 0, z: 0 }, 6.2, { y: 1.4, left: 0.72 });
+    await ctx.wait(900);
     ctx.complete({ stars: bestFound ? 3 : tried.size >= 3 ? 2 : 1 });
   },
 });

@@ -86,3 +86,14 @@ export function swallowCancel(e) {
   if (e instanceof Cancelled || e?.name === 'Cancelled') return;
   console.error(e);
 }
+
+/**
+ * 离开关卡时，没 await 的等待会以 Cancelled 作废，浏览器会当成「未处理的拒绝」报在控制台。
+ * 这里只过滤这一种取消错误，真正的报错照常显示。
+ */
+export function installCancelFilter() {
+  window.addEventListener('unhandledrejection', (ev) => {
+    const r = ev.reason;
+    if (r instanceof Cancelled || r?.name === 'Cancelled' || (r instanceof Error && /^cancell?ed$/i.test(r.message))) ev.preventDefault();
+  });
+}

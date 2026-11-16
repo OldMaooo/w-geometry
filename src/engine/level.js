@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import * as geo from '../geo/index.js';
 import { Scope, swallowCancel } from './scope.js';
-import { nextLevel } from './registry.js';
+import { nextLevel, chapters, makeUnlocks } from './registry.js';
 import { disposeTree } from './shared.js';
 
 /**
@@ -298,10 +298,14 @@ function makeCtx(E, def, scope, runner) {
       audio.play('success');
       await scope.wait(r.delay ?? 1100);
       const nx = nextLevel(def);
+      // 每章最后一关：下一章已解锁就多一个「下一章」（进下一章第 1 关）
+      const nextCh = nx || !def.chapter ? null : chapters[chapters.indexOf(def.chapter) + 1] || null;
+      const nextChOpen = !!nextCh && nextCh.levels.length > 0 && makeUnlocks(progress).chapterOpen(nextCh);
       const choice = await scope.guard(hud.result({
-        stars, discovery: r.discovery ?? def.discovery, eye: eyeLog, better, card: newCard, solo, hasNext: !!nx,
+        stars, discovery: r.discovery ?? def.discovery, eye: eyeLog, better, card: newCard, solo, hasNext: !!nx, nextChapter: nextChOpen,
       }));
       if (choice === 'next' && nx) runner.start(nx);
+      else if (choice === 'nextChapter' && nextChOpen) runner.start(nextCh.levels[0]);
       else if (choice === 'again') runner.start(def);
       else runner.nav.toMap(def.chapter?.id);
     },

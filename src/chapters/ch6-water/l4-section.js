@@ -91,7 +91,7 @@ export default defineLevel({
       ctx.fx.sparkle(field.center(), { size: 2.6 });
       await field.grow({ stagger: 6 });
     }
-    function reset() { trench.dry(); field.setLevel(0); }
+    function reset() { trench.dry(); field.setLevel(0); field.clearCrops(); }
 
     /** 一轮可拖的：达到 12 格且不垮就算成。 */
     async function build({ mode, sec, minSlope, text, tipSmall, tipBig, tipSteep, solution }) {

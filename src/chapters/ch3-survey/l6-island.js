@@ -172,6 +172,7 @@ export default defineLevel({
     ctx.labels.add(v3(MX - 5.5, MH * 0.55, 0), `山高 ${showNum(H)}<small>步</small>`, { cls: 'big' });
     ctx.say(`山有 ${showNum(H)} 步高`);
     await ctx.wait(2600);
+    await board.fadeOut(); // 图板收起来，不压结算面板
     const stars = ctx.hintsUsed === 0 ? 3 : ctx.hintsUsed < 3 ? 2 : 1;
     void g;
     ctx.complete({ stars });

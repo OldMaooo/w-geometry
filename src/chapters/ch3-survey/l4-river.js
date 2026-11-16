@@ -30,9 +30,10 @@ export default defineLevel({
     const T = { x: 0, z: -W };
     props.tree({ x: T.x, z: T.z - 0.2, kind: 'round', s: 1.2 });
     const A = { x: 0, z: 0 };
-    props.stake({ x: A.x, z: A.z, color: '#7A5233' });
-    const tagOf = (p, t, dy = 1.5) => ctx.labels.add(v3(p.x, dy, p.z), t, { cls: 'num', pop: false });
-    tagOf(A, 'A'); tagOf(T, 'T', 4.2);
+    const stakeA = props.stake({ x: A.x, z: A.z, color: '#7A5233' });
+    const tags = []; // 桩上的字母标签，结算前和桩一起收走（T 在树上，不收）
+    const tagOf = (p, t, dy = 1.5, keep = false) => { const l = ctx.labels.add(v3(p.x, dy, p.z), t, { cls: 'num', pop: false }); if (!keep) tags.push(l); return l; };
+    tagOf(A, 'A'); tagOf(T, 'T', 4.2, true);
 
     const g = await ctx.guess({ kind: 'length', actual: W, prompt: '先猜：河有几步宽？', min: 2, max: 14, start: 6, unit: '步' });
 
@@ -143,7 +144,7 @@ export default defineLevel({
     const D = { x: C.x, z: Dp.z };
     ringB.remove();
     crumb.group.removeFromParent();
-    props.stake({ x: D.x, z: D.z, color: '#7A5233' });
+    const stakeD = props.stake({ x: D.x, z: D.z, color: '#7A5233' });
     tagOf(D, 'D');
     ctx.audio.play('place');
     ctx.nudge('B 和树连成一线了！在这里打桩 D。', { kind: 'good' });
@@ -168,6 +169,10 @@ export default defineLevel({
     ctx.labels.add(mid, `河宽 ${showNum(m.len)}<small>步</small>`, { cls: 'big' });
     ctx.say(`河宽 ${showNum(m.len)} 步`);
     await ctx.wait(2200);
+    // 结算前：把打在地上的四根桩和字母收走
+    tags.forEach((l) => l.remove());
+    await Promise.all([stakeA, sB, sC, stakeD].map((o) => ctx.fx.to(o.scale, { x: 0.001, y: 0.001, z: 0.001 }, 350, { ease: 'in' })));
+    [stakeA, sB, sC, stakeD].forEach((o) => ctx.remove(o));
     void PALETTE;
     ctx.complete({ stars: geo.starsByError(Math.abs(g - W), 2, 4) });
   },

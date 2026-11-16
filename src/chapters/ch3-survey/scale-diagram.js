@@ -111,6 +111,8 @@ export function makeScaleBoard(ctx, o) {
       };
       return domGhost(ctx, root, () => toPx(state.k), () => toPx(kTo));
     },
+    /** 淡出再拆掉（结算前收起图板，免得压着结算面板）。 */
+    async fadeOut(ms = 400) { root.style.transition = `opacity ${ms}ms`; root.style.opacity = '0'; await ctx.wait(ms + 30); root.remove(); },
     remove() { root.remove(); },
   };
   function fire() { fns.forEach((fn) => fn(state.k)); }
@@ -125,7 +127,8 @@ export function makeScaleBoard(ctx, o) {
     hLbl.setAttribute('y', OY - (k * hh * u) / 2 + 7);
     hLbl.textContent = o.heightOf ? o.heightOf(k) : showNum(k * hh);
     bLbl.setAttribute('x', OX + (k * b * u) / 2);
-    bLbl.setAttribute('y', OY + 24);
+    // 底边的数放在三角形里贴着底线（不压在下面的长条上）；三角形太扁放不下时才放到线下面
+    bLbl.setAttribute('y', (k * hh * u) / 2 >= 34 ? OY - 9 : OY + 24);
     bLbl.textContent = showNum(k * b);
     kLbl.setAttribute('x', OX + (k * b * u) * 0.62);
     kLbl.setAttribute('y', OY - k * hh * u * 0.28 - 8);

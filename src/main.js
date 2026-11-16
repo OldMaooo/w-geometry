@@ -13,10 +13,12 @@ import { createLevelRunner } from './engine/level.js';
 import { createUnits } from './engine/units.js';
 import { chapters, findLevel } from './engine/registry.js';
 import { installDebug } from './engine/debug.js';
+import { installCancelFilter } from './engine/scope.js';
 import { h } from './engine/dom.js';
 import { icon } from './engine/icons.js';
 import { createWorld } from './world/world.js';
 
+installCancelFilter();
 const app = document.getElementById('app');
 const progress = createProgress();
 const stage = createStage(app);

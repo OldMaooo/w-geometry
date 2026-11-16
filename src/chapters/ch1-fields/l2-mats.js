@@ -21,7 +21,6 @@ export default defineLevel({
     props.ground({ w: 25, d: 14, seed: 22 });
     ctx.view.shadow({ x: 0, z: 0 }, 16);
     const mu = props.villager({ x: -12, z: 3.6, color: '#6F8FAF', face: 0.4 });
-    ctx.view.frame({ x: 0, z: 0 }, 12, { instant: true });
     // 「1 块草垫」的样板：一块垫子 + 两根 1 步的绳（下边、右边），一眼看出它正好一步见方。整关留着当参照，放在田的上方空地，不挡操作。
     const M = { x: -8.6, z: -5.4 };
     ctx.fx.pop(props.mat({ x: M.x, z: M.z }));
@@ -29,8 +28,11 @@ export default defineLevel({
       [{ x: M.x - 0.5, z: M.z + 0.95 }, { x: M.x + 0.5, z: M.z + 0.95 }],
       [{ x: M.x + 0.95, z: M.z - 0.5 }, { x: M.x + 0.95, z: M.z + 0.5 }],
     ]) { props.rope({ points: [a, b] }); }
-    ctx.labels.add(v3(M.x - 2.1, 0.1, M.z + 0.4), '1<small>块草垫</small>', { cls: 'big' });
-    ctx.labels.add(v3(M.x + 1.6, 0.1, M.z + 0.3), '1 步', { cls: 'tag' });
+    ctx.labels.add(v3(M.x - 1.8, 0.1, M.z + 0.4), '1<small>块草垫</small>', { cls: 'big' });
+    ctx.labels.add(v3(M.x + 1.5, 0.1, M.z + 0.3), '1 步', { cls: 'tag' });
+    // 开场先把镜头推近到样板上停一会儿，让他看清「一块草垫」多大，再拉回田里
+    ctx.view.frame({ x: M.x + 0.6, z: M.z + 0.2 }, 2.5, { instant: true, pitch: 52 });
+    await ctx.wait(2400);
     const accs = [];
     let lastLine = '';
 

@@ -1,6 +1,6 @@
 // 5-1 谁装得多 · 高的不一定多
 // 三组陶罐：高瘦 vs 矮胖、看着差很多其实一样多、看着差不多其实差一倍。
-// 每组：先点选谁装得多 → 把两个罐子分别拖到旁边的量杯上倒 → 看水位、读斗数。
+// 每组：先点选谁装得多 → 把两个罐子分别拖到旁边的量杯上倒 → 看水位、读杯数（1 杯 = 直径 1 步、高 1 步的圆筒，不是第 2 关起的「斗」）。
 import { defineLevel } from '../../engine/level.js';
 import { PALETTE } from '../../engine/palette.js';
 import { cylVolume, toDou } from './math.js';
@@ -61,7 +61,7 @@ export default defineLevel({
         answer: best,
       });
       const guessed = pick === 'L' ? A.dou : pick === 'R' ? B.dou : Math.min(A.dou, B.dou);
-      ctx.recordGuess('volume', guessed, Math.max(A.dou, B.dou), '斗', guessed / Math.max(A.dou, B.dou));
+      ctx.recordGuess('volume', guessed, Math.max(A.dou, B.dou), '杯', guessed / Math.max(A.dou, B.dou));
       if (pick === best) correct++;
 
       // ---- 倒进量杯 ----
@@ -80,7 +80,7 @@ export default defineLevel({
             s.handle.enabled = false;
             const n = s.dou;
             ctx.audio.play('star');
-            s.lbl = ctx.labels.add(v3(s.cup.cx(), CUP.h, 0), `${Math.round(n)}<small>斗</small>`, { cls: 'big', dy: 0.8 });
+            s.lbl = ctx.labels.add(v3(s.cup.cx(), CUP.h, 0), `${Math.round(n)}<small>杯</small>`, { cls: 'big', dy: 0.8 });
             ctx.fx.sparkle({ x: s.cup.cx(), z: 0 }, { size: 1.4 });
             s.resolve();
           },

@@ -22,7 +22,7 @@ export function installDebug(E, levels, world) {
     /** 当前关卡状态。 */
     get state() {
       const c = levels.ctx;
-      return c ? { level: c.id, done: c.done, hintsUsed: c.hintsUsed, hint: c._hint?.text || null, ...c.state } : { level: null, screen: 'map' };
+      return c ? { level: c.id, done: c.done, hintsUsed: c.hintsUsed, hint: c._hint?.text || null, ...plain(c.state) } : { level: null, screen: 'map' };
     },
     /** 所有关卡 id。 */
     levels: () => chapters.flatMap((c) => c.levels.map((l) => l.id)),
@@ -65,6 +65,22 @@ export function installDebug(E, levels, world) {
     });
   }
   return api;
+}
+
+/** 安全序列化：只留数字 / 字符串 / 布尔 / 普通对象和数组（深度 ≤4），Three 对象、DOM、函数、循环引用一律跳过。 */
+function plain(v, depth = 0, seen = new Set()) {
+  if (v === null || ['number', 'string', 'boolean'].includes(typeof v)) return v;
+  if (typeof v !== 'object' || depth > 4 || seen.has(v)) return undefined;
+  const proto = Object.getPrototypeOf(v);
+  if (!Array.isArray(v) && proto !== Object.prototype && proto !== null) return undefined;
+  seen.add(v);
+  const out = Array.isArray(v) ? [] : {};
+  for (const k of Object.keys(v)) {
+    const x = plain(v[k], depth + 1, seen);
+    if (x !== undefined) out[k] = x;
+  }
+  seen.delete(v);
+  return out;
 }
 
 function countObjects(root) {

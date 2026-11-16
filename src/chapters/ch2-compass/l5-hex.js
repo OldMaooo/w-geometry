@@ -33,7 +33,7 @@ export default defineLevel({
       options: [4, 5, 6, 7, 8].map((n) => ({ label: `${n} 次`, value: n })),
       answer: 6,
     });
-    ctx.recordGuess('length', g, 6, '次');
+    // 「几次」是个数数，不是长度，不记进眼力
     ctx.remove(demo.group);
 
     // ---- 画圆 ----
@@ -147,6 +147,10 @@ export default defineLevel({
     }
     ctx.nudge('隔一个连一个是三角形，两个叠起来是六角星。', { kind: 'good' });
     await ctx.wait(2200);
-    ctx.complete({ stars: g === 6 ? 3 : 2 });
+    // 结算前：屋顶盖回去，镜头换成斜视角、偏到左边，让立起来的亭子露在结算面板旁边
+    ctx.view.frame(O, 12.5, { yaw: -26, pitch: 30, y: 1.2, left: 0.66 });
+    await ctx.fx.to(roof.scale, { x: 1, y: 1, z: 1 }, 600, { ease: 'out' });
+    await ctx.wait(500);
+    ctx.complete({ stars: g === 6 ? 3 : 2, delay: 900 });
   },
 });

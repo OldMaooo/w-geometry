@@ -17,7 +17,7 @@ export default defineLevel({
   id: 'ch3-l5',
   title: '放大图纸',
   concept: '边×k，面积×k²',
-  brief: '图纸上的宫殿地基是个小 L 形。国王说：每条边放大 2 倍。要准备几块地砖？',
+  brief: '图纸上的地基是个小 L 形。每条边放大 2 倍，要几块地砖？',
   discovery: '边变 2 倍，要 4 倍的砖；边变 3 倍，要 9 倍的砖。',
 
   async setup(ctx) {
@@ -58,6 +58,7 @@ export default defineLevel({
       const { k, total, options } = ROUNDS[ri];
       ctx.hud.progress(ri, ROUNDS.length);
       const junk = [];
+      const stakes = [];
       const ropes = [];
       const poly = scalePoly(L_POLY, k);
       const V = poly.map(([x, z]) => ({ x: O.x + x, z: O.z + z }));
@@ -68,7 +69,7 @@ export default defineLevel({
 
       // ---- 放样 ----
       const stake0 = props.stake({ x: V[0].x, z: V[0].z, color: '#7A5233' });
-      junk.push(stake0);
+      junk.push(stake0); stakes.push(stake0);
       ctx.fx.pop(stake0);
       ctx.view.frame({ x: -0.5, z: 0.8 }, ri === 0 ? 12.5 : 14, {});
       for (let e = 0; e < 6; e++) {
@@ -123,7 +124,7 @@ export default defineLevel({
         ctx.remove(head);
         cnt.remove();
         rope.setPoints([A, B]);
-        if (e < 5) { const s = props.stake({ x: B.x, z: B.z }); junk.push(s); ctx.fx.pop(s); }
+        if (e < 5) { const s = props.stake({ x: B.x, z: B.z }); junk.push(s); stakes.push(s); ctx.fx.pop(s); }
         ctx.audio.play('place');
         await ctx.wait(250);
       }
@@ -179,6 +180,9 @@ export default defineLevel({
         junk.forEach((o) => ctx.remove(o));
         ropes.forEach((r) => r.group.removeFromParent());
         cellMeshes.forEach((m) => m.material.color.set('#D8B27A'));
+      } else {
+        // 最后一轮：放样用的桩收走，地上只留铺好的砖
+        stakes.forEach((o) => ctx.remove(o));
       }
     }
     ctx.hud.progress(ROUNDS.length, ROUNDS.length);

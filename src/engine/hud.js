@@ -266,9 +266,9 @@ export function createHud(root, deps) {
   }
 
   /**
-   * 结算面板。返回 Promise<'next'|'map'|'again'>。
+   * 结算面板。返回 Promise<'next'|'nextChapter'|'map'|'again'>。
    * @param {{ stars: number, discovery?: string, eye?: {kind:string, guess:number|string, actual:number|string, unit?:string, acc:number}[],
-   *   better?: boolean, card?: {title:string, lines:string[], icon?:string} | null, solo?: boolean, hasNext?: boolean, title?: string }} r
+   *   better?: boolean, card?: {title:string, lines:string[], icon?:string} | null, solo?: boolean, hasNext?: boolean, nextChapter?: boolean, title?: string }} r
    */
   function result(r) {
     audio.play('success');
@@ -298,7 +298,7 @@ export function createHud(root, deps) {
     if (r.card) {
       parts.push(h('div.r-card', {}, [
         h('div.r-card-ico', {}, icon(r.card.icon || 'book', { size: 40 })),
-        h('div', {}, [h('small', {}, '新的智慧卡'), h('b', {}, r.card.title), h('p', {}, r.card.lines[0])]),
+        h('div', {}, [h('small', {}, '新的智慧卡'), h('b', {}, r.card.title), ...r.card.lines.map((t) => h('p', {}, t))]),
       ]));
     }
     return new Promise((resolve) => {
@@ -307,8 +307,10 @@ export function createHud(root, deps) {
         btn('map', '回地图', () => done('map'), 'big'),
         btn('restart', '再玩', () => done('again'), 'big'),
         r.hasNext ? btn('next', '下一关', () => done('next'), 'big primary') : null,
+        !r.hasNext && r.nextChapter ? btn('next', '下一章', () => done('nextChapter'), 'big primary') : null,
       ]);
-      openModal(h('div.modal.result', {}, [...parts, actions]));
+      // 内容多时只让中间滚动（按钮始终看得见），不让整页出滚动条
+      openModal(h('div.modal.result', {}, [h('div.r-body', {}, parts), actions]));
       if (r.discovery) setTimeout(() => audio.say(r.discovery), 1200);
     });
   }

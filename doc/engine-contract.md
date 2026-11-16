@@ -2,7 +2,7 @@
 
 > 给做第 2–6 章的工程师看。**只读这一份 + 看 `src/chapters/ch1-fields/` 的代码就能开工。**
 > 以代码为准；本文件和代码不一致时，以 `src/engine/*.js` 里的 JSDoc 为准，并回改本文件。
-> 最近更新：2026-11-16（加「单位卡 / 尺子按钮」，见第 16 节）。
+> 最近更新：2026-11-16（S7 打磨：加「下一章」按钮、`view.frame` 的 `left`、取消错误自动吞掉；见第 4、12、14 节）。
 
 ## 0. 三条铁律（违反了协调者验收不过）
 
@@ -99,7 +99,7 @@ export default defineLevel({
 
 要点：
 
-- `setup` 可以写成一条 `async` 流程，从头写到 `ctx.complete`。**离开关卡时引擎会让所有 `ctx.wait / waitFor / guess / fx.*` 的 Promise 作废**，后面的代码不会再跑，不用自己判断。
+- `setup` 可以写成一条 `async` 流程，从头写到 `ctx.complete`。**离开关卡时引擎会让所有 `ctx.wait / waitFor / guess / fx.*` 的 Promise 作废**，后面的代码不会再跑，不用自己判断。没 `await` 的那几个被作废时，引擎会自己吞掉 `Cancelled` 这一种「未处理的拒绝」（`scope.js` 的 `installCancelFilter`，别的报错照常显示），章节里不用再绕。
 - 场景物体、拖拽句柄、标签、补间、定时器、每帧回调、工具栏按钮——**只要是通过 `ctx` 建的，换关自动清**。`teardown` 一般不用写。
 - 不要直接 `import * as THREE` 去 new 一堆东西又挂到别处；要挂就用 `ctx.add(obj)`（挂到关卡根节点）。
 
@@ -117,7 +117,7 @@ export default defineLevel({
 | `ctx.add(obj)` | `→ obj` | 自己 new 的 three 物体挂进关卡 |
 | `ctx.remove(obj)` | | 提前拆掉一个物体（释放几何体），也接受 `{group}` |
 | `ctx.THREE` / `ctx.geo` | | three 和几何数学库 |
-| `ctx.view.frame(center, radius, opt?)` | `center {x,z}`，`radius` 世界单位，`opt {yaw, pitch(度), instant, y}` | 镜头平滑飞过去，让这块区域装进画面 |
+| `ctx.view.frame(center, radius, opt?)` | `center {x,z}`，`radius` 世界单位，`opt {yaw, pitch(度), instant, y, left}` | 镜头平滑飞过去，让这块区域装进画面。`left`（0–1）：让这块区域落在屏幕偏左，数值是「离屏幕中心偏出半屏宽的比例」，结算前用它把东西挪到居中的结算面板旁边（如 `left: 0.7`），radius 要比平时放大些 |
 | `ctx.view.setTop(bool)` / `isTop()` / `reset(opt?)` | | 俯视 / 斜视（右下角按钮玩家也能切） |
 | `ctx.view.shadow(center, r)` | | 阴影只覆盖这块，场景小就调小，阴影更清楚 |
 | `ctx.pointer.draggable(obj, opts)` | `→ handle` | 见第 6 节 |
@@ -146,7 +146,7 @@ export default defineLevel({
 | `ctx.nudge(text, {kind})` | | 温和反馈气泡 + 软音 + 朗读；`kind:'good'` 是夸一句 |
 | `ctx.wait(ms)` | `→ Promise` | 等一会儿；solve / 演示时自动缩到 ≤400ms |
 | `ctx.waitFor(done => …)` | `→ Promise` | 等某件事：时机到了调 `done(value)` |
-| `ctx.after(ms, fn)` / `ctx.every(ms, fn)` / `ctx.onUpdate((dt,t)=>…)` / `ctx.onDispose(fn)` | | 定时器 / 每帧 / 离开时，全部自动清 |
+| `ctx.after(ms, fn)` / `ctx.every(ms, fn)` / `ctx.onUpdate((dt,t)=>…)` / `ctx.onDispose(fn)` | `after` / `every` / `onUpdate` 都返回「取消」函数 | 定时器 / 每帧 / 离开时，全部自动清；也可以自己提前取消 |
 | `ctx.rand(a, b)` | | 整数随机 `[a, b]` |
 | `ctx.complete({stars, discovery?, delay?})` | | 过关：彩纸 → 结算面板 → 下一关 / 回地图 / 再玩 |
 | `ctx.state` | `{}` | 随便放本关状态，`__geo.state` 能看到（调试用） |
@@ -272,6 +272,8 @@ ctx.complete({ stars: 3, discovery: '可选，覆盖 defineLevel 里的 discover
 
 - 星数 1–3（至少 1 颗，没有 0 星）。常用：`ctx.geo.starsByError(误差, 三星阈值, 两星阈值)`。
 - 引擎负责：彩纸 + 音效 → 存档（只往好里改）→ 本关解锁的智慧卡（`cards[].unlockBy === 本关 id`）→ 结算面板。
+- 结算面板的按钮：「回地图」「再玩」，不是本章最后一关时多一个「下一关」；**每章最后一关**若下一章已解锁，多一个主按钮「下一章」（进下一章第 1 关；第 6 章末关不出现）。面板内容多时中间一段自己滚，按钮始终看得见；智慧卡的几句话全部显示。
+- 结算面板居中、宽 560px，会盖住画面正中。关内要让人看清的东西（立起来的亭子、箱子、图板），结算前用 `ctx.view.frame(..., { left })` 挪到左边，或把压在左上角的图板收掉。
 - 存档 key 只有一个 `geo_save`（localStorage），结构：`{ v, lv: {id: {s, solo}}, eye: {length: [0–100…]}, cards: [], set: {sound, voice} }`，每类眼力只留最近 20 次，总量 < 1KB。**章节不要自己写 localStorage**；真要存，key 必须 `geo_` 开头并在报告里说明。
 - 解锁：章内顺序解锁；上一章过任意 3 关开下一章。
 
@@ -282,7 +284,7 @@ ctx.complete({ stars: 3, discovery: '可选，覆盖 defineLevel 里的 discover
   - `goto('ch2-l1')` / `goto('map')`
   - `solve()` → `Promise<是否过关>`：自动玩完（和提示第三档同一套代码）
   - `complete(stars?)`：强制过关，走正常结算
-  - `state`：当前关卡 id、是否过关、用了几档提示、当前提示文字 + `ctx.state` 里的东西
+  - `state`：当前关卡 id、是否过关、用了几档提示、当前提示文字 + `ctx.state` 里的东西（安全序列化：Three 对象、DOM、函数、循环引用会被跳过，深度 ≤ 4）
   - `stats()`：场景物体数 / 拖拽句柄 / 标签 / 补间 / draw calls / 三角面（**换关前后对比查泄漏**：回地图后句柄、标签应回到地图自己的数量）
   - `save()` / `saveBytes()` / `resetSave()`
 
@@ -333,7 +335,7 @@ units: [
 | `text` | 一两句话（每个单位 ≤ 2 句，可朗读），说清它在画面里多大 |
 | `draw` | 可选配图：内置名 `'step'`（一步）`'mat'`（草垫）`'cube'`（1 步见方的小方箱），或一个返回 DOM 元素 / SVG 字符串的函数（画在 320×200 的 viewBox 里，色板同 `palette.js`）；不写就只有文字 |
 
-写 `text` 前先在本章代码里查清这个单位到底多大，别凭印象（如第 5 章：方仓、囤、标准斗里 1 斗 = 1×1×1 立方步；5-1 的陶罐按 π/4 立方步算，约等于）。单位 ≥ 3 个时卡片会很高（1180×820 下 3 个单位约 740px），不要再多。
+写 `text` 前先在本章代码里查清这个单位到底多大，别凭印象（如第 5 章：方仓、囤、标准斗里 1 斗 = 1×1×1 立方步；5-1 量杯读数的单位是 π/4 立方步，画面上写「杯」不写「斗」，两者不混）。单位 ≥ 3 个时卡片会很高（1180×820 下 3 个单位约 740px），不要再多。
 
 **关卡里的实物参照**：单位第一次出现的关，最好在地上摆个样板（1 个世界单位 = 1 步）。参考 `ch1-fields/l1-ridge.js`（两根桩 + 结绳 + 「1 步」标签 + 阿禾站旁边比）和 `l2-mats.js`（一块草垫 + 两根 1 步的绳 + 「1 块草垫」标签）：放在场景边缘，不挡操作区；开场说明合并进 `brief`，仍不超过两句。
 
