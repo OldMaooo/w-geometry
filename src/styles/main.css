@@ -119,7 +119,7 @@ html, body {
 .hud-tl, .hud-tr { position: absolute; top: 14px; display: flex; gap: 8px; align-items: center; }
 .hud-tl { left: 14px; }
 .hud-tr { right: 14px; }
-.hud-tm { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: calc(100% - 640px); min-width: 380px; }
+.hud-tm { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: calc(100% - 730px); min-width: 380px; }
 .hud-bm { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .hud-br { position: absolute; right: 14px; bottom: 18px; }
 .hud-tm > .task-dots { pointer-events: none; }
@@ -296,6 +296,37 @@ html, body {
 .eye-bars i.last { background: var(--rice); }
 .eye-bars.empty { align-items: center; font-size: 17px; color: var(--ink-2); }
 .eye-last { font-size: 24px; font-weight: 700; text-align: right; color: var(--deep); }
+
+/* 单位卡「认识尺子」 */
+.units { width: 720px; }
+.units .m-head { gap: 8px; }
+.u-list { display: flex; flex-direction: column; gap: 10px; }
+.u-row { display: flex; align-items: center; gap: 16px; padding: 8px 18px 8px 8px; border-radius: 18px; background: #fff; border: 1.5px solid var(--line); }
+.u-fig { flex: none; width: 260px; border-radius: 12px; overflow: hidden; }
+.u-fig svg { display: block; width: 100%; height: auto; }
+.u-txt { flex: 1; min-width: 0; }
+.u-name { display: flex; align-items: center; gap: 2px; font-size: 26px; }
+.u-name .btn { border: 0; background: transparent; }
+.u-txt p { margin: 2px 0 0; font-size: 21px; line-height: 1.5; }
+.u-actions { display: flex; justify-content: center; padding-top: 2px; }
+/* 配图动画：一轮 6 秒，小人迈两步、脚印一个个出现、绳子拉出来；最后停一会儿再重来 */
+.u-walker { animation: u-walk 6s ease-in-out infinite; }
+@keyframes u-walk { 0%, 6% { transform: translateX(0); } 22%, 38% { transform: translateX(55px); } 54%, 100% { transform: translateX(110px); } }
+.u-pr2 { animation: u-pr2 6s infinite; }
+.u-pr3 { animation: u-pr3 6s infinite; }
+@keyframes u-pr2 { 0%, 20% { opacity: 0; } 22%, 100% { opacity: 1; } }
+@keyframes u-pr3 { 0%, 52% { opacity: 0; } 54%, 100% { opacity: 1; } }
+.u-fade { animation: u-fade 6s infinite; }
+@keyframes u-fade { 0%, 54% { opacity: 0; } 62%, 100% { opacity: 1; } }
+.u-rope line { stroke-dasharray: 1; animation: u-draw 6s infinite; }
+@keyframes u-draw { 0%, 54% { stroke-dashoffset: 1; } 66%, 100% { stroke-dashoffset: 0; } }
+.u-matpop { transform-origin: 135px 81px; animation: u-matpop 6s infinite; }
+@keyframes u-matpop { 0% { transform: scale(0.7); opacity: 0; } 12%, 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .u-walker, .u-pr2, .u-pr3, .u-fade, .u-rope line, .u-matpop { animation: none; }
+  .u-walker { transform: translateX(110px); }
+  .u-rope line { stroke-dasharray: none; }
+}
 
 /* 幽灵手 */
 .ghost-hand { position: absolute; left: 0; top: 0; color: #fff; filter: drop-shadow(0 0 2px rgba(74,58,40,0.9)); opacity: 0; }

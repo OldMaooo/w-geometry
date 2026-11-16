@@ -14,14 +14,19 @@ export default defineLevel({
   id: 'ch1-l1',
   title: '量田埂',
   concept: '长度·单位',
-  brief: '洪水冲没了阿禾家的田埂，只剩两头的残桩。这条田埂有几步长？',
+  brief: '洪水冲没了阿禾家的田埂。地上这根绳是 1 步长，田埂有几步长？',
   discovery: '斜着放的田埂，也能用同一根结绳量。',
 
   async setup(ctx) {
     const { props, geo } = ctx;
     props.ground({ w: 24, d: 15, seed: 11, puddles: 0 });
     ctx.view.shadow({ x: 0, z: 0 }, 17);
-    const ahe = props.villager({ x: -10.5, z: 1.5, color: PALETTE.clay, face: 0.6 });
+    const ahe = props.villager({ x: -9.4, z: -1.2, color: PALETTE.clay, face: 0.6 });
+    // 「1 步」的样板：两根桩 + 一根结绳 + 标签，阿禾站在旁边比一比（1 个世界单位就是 1 步）。整关留着当参照，放在左边缘，不挡操作。
+    const R0 = { x: -11.6, z: -1.2 }, R1 = { x: -10.6, z: -1.2 };
+    ctx.fx.pop(props.stake({ x: R0.x, z: R0.z, h: 0.7 })); ctx.fx.pop(props.stake({ x: R1.x, z: R1.z, h: 0.7 }), { delay: 120 });
+    props.rope({ points: [R0, R1] });
+    ctx.labels.add(v3((R0.x + R1.x) / 2, 0.7, R0.z), '1<small>步</small>', { cls: 'big' });
     ctx.view.frame({ x: 0, z: 0.5 }, 12, { instant: true });
 
     // 三条的长度：4–10 的整数，尽量不重复
@@ -45,7 +50,8 @@ export default defineLevel({
       const sA = props.stake({ x: A.x, z: A.z, h: 0.7 });
       const sB = props.stake({ x: B.x, z: B.z, h: 0.55, color: '#8E6440' });
       ctx.fx.pop(sA); ctx.fx.pop(sB, { delay: 120 });
-      ctx.view.frame(mid, L / 2 + 2);
+      // 第一条：镜头往左让一点，把左边「1 步」的样板也带进画面
+      if (i === 0) ctx.view.frame({ x: mid.x - 1, z: mid.z + 1.2 }, L / 2 + 2.8); else ctx.view.frame(mid, L / 2 + 2);
       ahe.face(mid);
 
       if (i > 0) ctx.hud.task(i === 2 ? '这一条是斜着的。先猜猜，几步长？' : '又一条田埂。先猜猜，几步长？');

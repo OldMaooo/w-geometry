@@ -14,6 +14,10 @@ export default defineChapter({
   name: '量器',
   intro: '丰收了。粮食要称量、要进仓、要交粮税，得有公平的量器。',
   levels: [l1, l2, l3, l4, l5, l6],
+  // 单位卡里多讲一个「斗」：本章方仓 / 囤 / 标准斗里，一个 1×1×1 的方块就是 1 斗
+  units: [
+    { name: '一斗', text: '一步见方的小方箱，装满就是一斗。', draw: 'cube' },
+  ],
   cards: [
     {
       id: 'ch5-yangma', title: '阳马', icon: 'puzzle', unlockBy: 'ch5-l4',

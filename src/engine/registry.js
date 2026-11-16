@@ -18,6 +18,7 @@
  * @property {string} intro       一句话介绍
  * @property {import('./level.js').LevelDef[]} levels
  * @property {Card[]} cards
+ * @property {import('./units.js').UnitDef[]} [units]  本章自己的单位（可选）：在本章关卡里点顶栏「尺子」时，排在「一步」「一块草垫」后面
  */
 
 /** @param {Chapter} def @returns {Chapter} */

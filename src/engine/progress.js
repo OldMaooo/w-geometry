@@ -5,6 +5,7 @@
 //   lv:   { 'ch1-l1': { s: 3, solo: 1 } },          // s 最好星数；solo=1 表示曾不用提示独立过关
 //   eye:  { length: [86, 92], area: [...], ... },    // 每次「先猜」的准确度 0–100，每类最多留 20 次
 //   cards:['ch1-rope'],                              // 已得智慧卡 id
+//   seen: { units: 1 },                              // 一次性提示弹过没（目前只有「认识尺子」单位卡）
 //   set:  { sound: true, voice: true } }
 
 const KEY = 'geo_save';
@@ -13,7 +14,7 @@ export const EYE_NAMES = { length: '长度', area: '面积', angle: '角度', he
 const EYE_KEEP = 20;
 
 function blank() {
-  return { v: 1, lv: {}, eye: {}, cards: [], set: { sound: true, voice: true } };
+  return { v: 1, lv: {}, eye: {}, cards: [], seen: {}, set: { sound: true, voice: true } };
 }
 
 export function createProgress() {
@@ -73,6 +74,9 @@ export function createProgress() {
     },
     hasCard(id) { return data.cards.includes(id); },
     cards() { return [...data.cards]; },
+    /** 一次性提示弹过没（如 'units'）。 */
+    seen(k) { return !!data.seen[k]; },
+    markSeen(k) { if (!data.seen[k]) { data.seen[k] = 1; save(); } },
     settings() { return data.set; },
     setSetting(k, v) { data.set[k] = v; save(); },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },

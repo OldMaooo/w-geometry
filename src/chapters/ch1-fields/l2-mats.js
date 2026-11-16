@@ -14,7 +14,7 @@ export default defineLevel({
   id: 'ch1-l2',
   title: '铺草垫',
   concept: '面积·铺方块',
-  brief: '育秧要给田铺满草垫，一块草垫 1 步见方。要准备多少块？',
+  brief: '育秧要铺满草垫。看，一块草垫正好 1 步见方，田要铺几块？',
 
   async setup(ctx) {
     const { props, geo } = ctx;
@@ -22,6 +22,15 @@ export default defineLevel({
     ctx.view.shadow({ x: 0, z: 0 }, 16);
     const mu = props.villager({ x: -12, z: 3.6, color: '#6F8FAF', face: 0.4 });
     ctx.view.frame({ x: 0, z: 0 }, 12, { instant: true });
+    // 「1 块草垫」的样板：一块垫子 + 两根 1 步的绳（下边、右边），一眼看出它正好一步见方。整关留着当参照，放在田的上方空地，不挡操作。
+    const M = { x: -8.6, z: -5.4 };
+    ctx.fx.pop(props.mat({ x: M.x, z: M.z }));
+    for (const [a, b] of [
+      [{ x: M.x - 0.5, z: M.z + 0.95 }, { x: M.x + 0.5, z: M.z + 0.95 }],
+      [{ x: M.x + 0.95, z: M.z - 0.5 }, { x: M.x + 0.95, z: M.z + 0.5 }],
+    ]) { props.rope({ points: [a, b] }); }
+    ctx.labels.add(v3(M.x - 2.1, 0.1, M.z + 0.4), '1<small>块草垫</small>', { cls: 'big' });
+    ctx.labels.add(v3(M.x + 1.6, 0.1, M.z + 0.3), '1 步', { cls: 'tag' });
     const accs = [];
     let lastLine = '';
 

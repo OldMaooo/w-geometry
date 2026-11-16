@@ -10,6 +10,7 @@ import { createProps } from './engine/props.js';
 import { createHud } from './engine/hud.js';
 import { createProgress } from './engine/progress.js';
 import { createLevelRunner } from './engine/level.js';
+import { createUnits } from './engine/units.js';
 import { chapters, findLevel } from './engine/registry.js';
 import { installDebug } from './engine/debug.js';
 import { h } from './engine/dom.js';
@@ -29,6 +30,10 @@ const labels = createLabels(stage, labelLayer);
 const fx = createFx(stage, fxLayer, pointer);
 const props = createProps(stage);
 const hud = createHud(app, { audio, progress, controls });
+
+const units = createUnits({ hud, audio, progress });
+// 尺子按钮：在某章的关卡里，多讲该章的单位；在地图上只讲默认的
+hud.onRuler(() => { audio.play('open'); units.open(levels.current?.chapter || null); });
 
 const E = { stage, controls, audio, pointer, labels, fx, props, hud, progress, chapters, screenScope: null, levels: null };
 
@@ -61,6 +66,7 @@ if (directLevel) {
         audio.play('success');
         start.classList.add('gone');
         setTimeout(() => start.remove(), 500);
+        units.openFirstTime(); // 第一次玩：先认识「一步」「一块草垫」
       } }, [icon('play', { size: 32 }), h('span', {}, '开始')]),
     ]),
   ]);

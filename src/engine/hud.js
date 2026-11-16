@@ -81,6 +81,11 @@ export function createHud(root, deps) {
   const settingsBtn = btn('settings', null, () => toggleSettings(), 'ghost');
   settingsBtn.setAttribute('aria-label', '设置');
 
+  // 尺子按钮：随时重看「一步多长、一块草垫多大」（地图、关卡顶栏都有）
+  let onRuler = () => {};
+  const rulerBtn = btn('ruler', null, () => onRuler(), 'ghost');
+  rulerBtn.setAttribute('aria-label', '认识尺子');
+
   // 提示按钮
   const hintDots = h('span.hint-dots', {}, [h('i'), h('i'), h('i')]);
   const hintBtn = h('button.btn.hint', { type: 'button' }, [icon('hint', { size: 26 }), h('span', {}, '想一想'), hintDots]);
@@ -103,14 +108,14 @@ export function createHud(root, deps) {
     onHint = hint;
     titleChip.replaceChildren(h('b', {}, code), h('span', {}, title));
     topLeft.replaceChildren(backBtn, titleChip);
-    topRight.replaceChildren(hintBtn, restartBtn, settingsBtn, settingsPop);
+    topRight.replaceChildren(hintBtn, restartBtn, rulerBtn, settingsBtn, settingsPop);
     bottomRight.style.display = '';
     layer.classList.add('in-level');
     clearLevel();
   }
   function mapMode(extraRight = []) {
     topLeft.replaceChildren();
-    topRight.replaceChildren(...extraRight, settingsBtn, settingsPop);
+    topRight.replaceChildren(...extraRight, rulerBtn, settingsBtn, settingsPop);
     bottomRight.style.display = 'none';
     layer.classList.remove('in-level');
     clearLevel();
@@ -349,7 +354,9 @@ export function createHud(root, deps) {
   }
 
   return {
-    layer, levelMode, mapMode, task, progress: progressDots, tool, guess, choose, prompt, nudge, hintState,
+    layer, levelMode, mapMode,
+    /** 设置尺子按钮点了做什么（main.js 接单位卡）。 */
+    onRuler(fn) { onRuler = fn; }, task, progress: progressDots, tool, guess, choose, prompt, nudge, hintState,
     result, openModal, closeModal, clearLevel,
     /** 正在猜的话，直接答 value（solve 用）。返回有没有在猜。 */
     autoAnswer(value) { if (!activeGuess) return false; activeGuess.answer(value); return true; },
